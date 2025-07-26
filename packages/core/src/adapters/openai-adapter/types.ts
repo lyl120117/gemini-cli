@@ -11,8 +11,8 @@ import { Type } from '@google/genai';
  */
 
 export interface OpenAIConfig {
-  apiKey: string;
-  baseURL?: string;
+  apiKey?: string;  // Optional, can be read from OPENAI_API_KEY env var
+  baseURL?: string; // Optional, can be read from OPENAI_BASE_URL env var, defaults to https://api.openai.com/v1
   model: string;
   modelMapping?: Record<string, string>;
 }

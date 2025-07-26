@@ -65,7 +65,6 @@ export function createContentGeneratorConfig(
   const googleCloudLocation = process.env.GOOGLE_CLOUD_LOCATION || undefined;
   const openaiApiKey = process.env.OPENAI_API_KEY || undefined;
   const openaiBaseUrl = process.env.OPENAI_BASE_URL || undefined;
-  const openaiModel = process.env.OPENAI_MODEL || 'gpt-4-turbo-preview';
 
   // Use runtime model from config if available; otherwise, fall back to parameter or default
   const effectiveModel = config.getModel() || DEFAULT_GEMINI_MODEL;
@@ -106,9 +105,10 @@ export function createContentGeneratorConfig(
     return contentGeneratorConfig;
   }
 
-  if (authType === AuthType.USE_OPENAI && openaiApiKey) {
+  if (authType === AuthType.USE_OPENAI) {
+    // For OpenAI, we can proceed even without apiKey in config as it might be in env vars
     contentGeneratorConfig.apiKey = openaiApiKey;
-    contentGeneratorConfig.model = openaiModel;
+    // Keep the Gemini model name - it will be mapped in the adapter
     contentGeneratorConfig.vertexai = false;
     // Store OpenAI specific config
     (contentGeneratorConfig as any).openaiBaseUrl = openaiBaseUrl;
@@ -157,10 +157,7 @@ export async function createContentGenerator(
   }
 
   if (config.authType === AuthType.USE_OPENAI) {
-    if (!config.apiKey) {
-      throw new Error('OpenAI API key is required');
-    }
-    
+    // apiKey can be undefined here - the adapter will check env vars
     return createOpenAIAdapter({
       apiKey: config.apiKey,
       baseURL: (config as any).openaiBaseUrl,

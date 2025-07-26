@@ -1,27 +1,30 @@
 # OpenAI Adapter Configuration
 
-The Gemini CLI includes an OpenAI adapter that allows you to use OpenAI-compatible APIs, including OpenAI itself and alternative providers like Moonshot AI (Kimi), DeepSeek, and others.
+The OGemini CLI includes an OpenAI adapter that allows you to use OpenAI-compatible APIs, including OpenAI itself and alternative providers like Moonshot AI (Kimi), DeepSeek, and others.
 
 ## Overview
 
-The OpenAI adapter translates between Gemini's API format and OpenAI's API format, enabling seamless use of any OpenAI-compatible service with the Gemini CLI.
+The OpenAI adapter translates between Gemini's API format and OpenAI's API format, enabling seamless use of any OpenAI-compatible service with the OGemini CLI.
 
 ## Configuration Methods
 
-### 1. Environment Variables
+### 1. Environment Variables (Recommended)
 
-Create a `.env` file in your project root or home directory:
+The adapter automatically reads configuration from environment variables. You can set these in your shell profile or create a `.env` file in your project root or home directory:
 
 ```bash
-# Required
+# Required - API key for authentication
 OPENAI_API_KEY=your-api-key-here
 
-# Optional (defaults to OpenAI's API)
+# Optional - Base URL for the API endpoint
+# Defaults to: https://api.openai.com/v1
 OPENAI_BASE_URL=https://api.openai.com/v1
 
-# Optional (defaults to gpt-4-turbo-preview)
-OPENAI_MODEL=gpt-4
+# Note: The model is selected using the standard Gemini model names
+# and mapped to OpenAI-compatible models via openaiModelMapping
 ```
+
+The adapter will automatically use these environment variables if they are set, even if not explicitly provided in the configuration.
 
 ### 2. Settings Configuration
 

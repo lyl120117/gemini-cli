@@ -36,9 +36,17 @@ export class OpenAIAdapter implements ContentGenerator {
   private modelMapping: Record<string, string> | undefined;
 
   constructor(config: OpenAIConfig) {
+    // Use environment variables as fallback if not provided in config
+    const apiKey = config.apiKey || process.env.OPENAI_API_KEY;
+    const baseURL = config.baseURL || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
+    
+    if (!apiKey) {
+      throw new Error('OpenAI API key is required. Please set OPENAI_API_KEY environment variable or provide it in the configuration.');
+    }
+    
     this.client = new OpenAI({
-      apiKey: config.apiKey,
-      baseURL: config.baseURL,
+      apiKey: apiKey,
+      baseURL: baseURL,
     });
     this.modelMapping = config.modelMapping;
     // Map Gemini model names to OpenAI equivalents
