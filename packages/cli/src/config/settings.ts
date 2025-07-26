@@ -105,6 +105,10 @@ export interface Settings {
 
   // Model mapping configuration for OpenAI adapter
   openaiModelMapping?: Record<string, string>;
+  
+  // OpenAI API configuration
+  openaiApiKey?: string;
+  openaiBaseUrl?: string;
 }
 
 export interface SettingsError {

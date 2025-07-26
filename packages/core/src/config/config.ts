@@ -184,6 +184,8 @@ export interface ConfigParameters {
   ideMode?: boolean;
   ideClient?: IdeClient;
   openaiModelMapping?: Record<string, string>;
+  openaiApiKey?: string;
+  openaiBaseUrl?: string;
 }
 
 export class Config {
@@ -228,6 +230,8 @@ export class Config {
   private readonly ideMode: boolean;
   private readonly ideClient: IdeClient | undefined;
   private readonly openaiModelMapping: Record<string, string> | undefined;
+  private readonly openaiApiKey: string | undefined;
+  private readonly openaiBaseUrl: string | undefined;
   private modelSwitchedDuringSession: boolean = false;
   private readonly maxSessionTurns: number;
   private readonly listExtensions: boolean;
@@ -295,6 +299,8 @@ export class Config {
     this.ideMode = params.ideMode ?? false;
     this.ideClient = params.ideClient;
     this.openaiModelMapping = params.openaiModelMapping;
+    this.openaiApiKey = params.openaiApiKey;
+    this.openaiBaseUrl = params.openaiBaseUrl;
 
     if (params.contextFileName) {
       setGeminiMdFilename(params.contextFileName);
@@ -594,6 +600,14 @@ export class Config {
 
   getOpenAIModelMapping(): Record<string, string> | undefined {
     return this.openaiModelMapping;
+  }
+
+  getOpenAIApiKey(): string | undefined {
+    return this.openaiApiKey;
+  }
+
+  getOpenAIBaseUrl(): string | undefined {
+    return this.openaiBaseUrl;
   }
 
   async getGitService(): Promise<GitService> {

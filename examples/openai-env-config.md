@@ -1,32 +1,56 @@
-# OpenAI Adapter Environment Variable Configuration Example
+# OpenAI Adapter Configuration Example
 
-This example demonstrates how to use the OGemini CLI with OpenAI-compatible APIs using environment variables.
+This example demonstrates how to use the OGemini CLI with OpenAI-compatible APIs.
 
 ## Setup
 
-### 1. Using .env file (Recommended for Development)
+### 1. Using settings.json (Recommended)
 
-Create a `.env` file in your project root:
+Create or update `~/.gemini/settings.json`:
 
-```bash
-# For OpenAI
-OPENAI_API_KEY=sk-your-openai-api-key
-OPENAI_BASE_URL=https://api.openai.com/v1
-
-# For Moonshot AI (Kimi)
-# OPENAI_API_KEY=sk-your-moonshot-key
-# OPENAI_BASE_URL=https://api.moonshot.cn/v1
-
-# For DeepSeek
-# OPENAI_API_KEY=sk-your-deepseek-key
-# OPENAI_BASE_URL=https://api.deepseek.com/v1
-
-# Note: Model selection is done through the CLI using Gemini model names
-# which are then mapped to the appropriate OpenAI-compatible model names
-# via the openaiModelMapping configuration in settings.json
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-api-key",
+  "openaiBaseUrl": "https://api.openai.com/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "gpt-4o",
+    "gemini-2.5-flash": "gpt-4o-mini"
+  }
+}
 ```
 
-### 2. Using Shell Environment Variables
+For other providers, adjust the configuration:
+
+**Moonshot AI (Kimi):**
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-moonshot-key",
+  "openaiBaseUrl": "https://api.moonshot.cn/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "kimi-k2-0711-preview",
+    "gemini-2.5-flash": "kimi-k1-0701"
+  }
+}
+```
+
+**DeepSeek:**
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-deepseek-key",
+  "openaiBaseUrl": "https://api.deepseek.com/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "deepseek-chat",
+    "gemini-2.5-flash": "deepseek-coder"
+  }
+}
+```
+
+### 2. Using Environment Variables (Fallback)
+
+If you prefer environment variables or need to override settings:
 
 ```bash
 # For Linux/macOS
@@ -38,14 +62,11 @@ $env:OPENAI_API_KEY = "sk-your-api-key"
 $env:OPENAI_BASE_URL = "https://api.openai.com/v1"
 ```
 
-### 3. Configure Authentication Type
+Or create a `.env` file in your project root:
 
-Create or update `~/.gemini/settings.json`:
-
-```json
-{
-  "selectedAuthType": "openai-api-key"
-}
+```bash
+OPENAI_API_KEY=sk-your-api-key
+OPENAI_BASE_URL=https://api.openai.com/v1
 ```
 
 ## Model Selection
@@ -71,11 +92,18 @@ The CLI will automatically:
 4. Connect to the OpenAI-compatible service
 5. Map your selected Gemini model to the appropriate provider model
 
-## Benefits of Environment Variable Configuration
+## Configuration Priority
 
-1. **Security**: API keys are not stored in code or configuration files
+The OGemini CLI uses the following priority order for OpenAI configuration:
+1. Settings from `settings.json` (highest priority)
+2. Environment variables
+3. Default values (for base URL only)
+
+## Benefits
+
+1. **Security**: API keys can be stored securely in settings or environment
 2. **Flexibility**: Easy to switch between different providers
-3. **CI/CD Friendly**: Works well with deployment pipelines
+3. **CI/CD Friendly**: Environment variables work well with deployment pipelines
 4. **Multiple Environments**: Different keys for dev/staging/production
 
 ## Troubleshooting

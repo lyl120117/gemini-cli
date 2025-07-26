@@ -229,7 +229,7 @@ const App = ({ config, settings, startupWarnings = [], version }: AppProps) => {
 
   useEffect(() => {
     if (settings.merged.selectedAuthType) {
-      const error = validateAuthMethod(settings.merged.selectedAuthType);
+      const error = validateAuthMethod(settings.merged.selectedAuthType, settings.merged);
       if (error) {
         setAuthError(error);
         openAuthDialog();

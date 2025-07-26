@@ -425,6 +425,8 @@ export async function loadCliConfig(
     ideMode,
     ideClient,
     openaiModelMapping: settings.openaiModelMapping,
+    openaiApiKey: settings.openaiApiKey,
+    openaiBaseUrl: settings.openaiBaseUrl,
   });
 }
 

@@ -26,7 +26,7 @@ OGemini CLI 是一个强大的命令行 AI 工作流工具，基于 Gemini CLI �
 1. **克隆仓库**
 
    ```bash
-   git clone https://github.com/your-username/ogemini-cli.git
+   git clone https://github.com/lyl120117/gemini-cli
    cd ogemini-cli
    ```
 
@@ -69,56 +69,65 @@ OGemini CLI 是一个强大的命令行 AI 工作流工具，基于 Gemini CLI �
 
 #### 使用 OpenAI 兼容 API
 
-1. **环境变量配置**
+OGemini CLI 支持任何 OpenAI 兼容的 API，包括 OpenAI、Moonshot AI（Kimi）、DeepSeek 等。
 
-   在项目目录或主目录创建 `.env` 文件：
+##### 方法 1：使用 settings.json 配置（推荐）
 
-   ```bash
-   OPENAI_API_KEY=你的API密钥
-   OPENAI_BASE_URL=https://api.openai.com/v1  # 或其他兼容API地址
-   OPENAI_MODEL=gpt-4  # 或其他模型名称
-   ```
+创建或更新配置文件 `~/.gemini/settings.json`：
 
-   **示例配置：**
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-api-key",
+  "openaiBaseUrl": "https://api.openai.com/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "gpt-4o",
+    "gemini-2.5-flash": "gpt-4o-mini"
+  }
+}
+```
 
-   Moonshot AI (Kimi):
-   ```bash
-   OPENAI_API_KEY=sk-your-moonshot-key
-   OPENAI_BASE_URL=https://api.moonshot.cn/v1
-   OPENAI_MODEL=kimi-k2-0711-preview
-   ```
+**其他服务商配置示例：**
 
-   DeepSeek:
-   ```bash
-   OPENAI_API_KEY=sk-your-deepseek-key
-   OPENAI_BASE_URL=https://api.deepseek.com/v1
-   OPENAI_MODEL=deepseek-chat
-   ```
+Moonshot AI (Kimi):
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-moonshot-key",
+  "openaiBaseUrl": "https://api.moonshot.cn/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "kimi-k2-0711-preview",
+    "gemini-2.5-flash": "kimi-k2-0711-preview"
+  }
+}
+```
 
-2. **配置文件设置**
+DeepSeek:
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-deepseek-key",
+  "openaiBaseUrl": "https://api.deepseek.com/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "deepseek-chat",
+    "gemini-2.5-flash": "deepseek-coder"
+  }
+}
+```
 
-   创建 `~/.gemini/settings.json`：
+##### 方法 2：使用环境变量（备用）
 
-   ```json
-   {
-     "selectedAuthType": "openai-api-key",
-     "openaiModelMapping": {
-       "gemini-2.5-pro": "gpt-4o",
-       "gemini-2.5-flash": "gpt-4o-mini"
-     }
-   }
-   ```
+如果未在 settings.json 中配置，系统会自动读取环境变量。在项目目录或主目录创建 `.env` 文件：
 
-   自定义模型映射示例（Moonshot AI）：
-   ```json
-   {
-     "selectedAuthType": "openai-api-key",
-     "openaiModelMapping": {
-       "gemini-2.5-pro": "kimi-k2-0711-preview",
-       "gemini-2.5-flash": "kimi-k1-0701"
-     }
-   }
-   ```
+```bash
+OPENAI_API_KEY=sk-your-api-key
+OPENAI_BASE_URL=https://api.openai.com/v1
+```
+
+**配置优先级：**
+1. settings.json 配置（最高优先级）
+2. 环境变量
+3. 默认值（仅限 base URL）
 
 ### 使用方法
 

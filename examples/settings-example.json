@@ -1,0 +1,23 @@
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-api-key-here",
+  "openaiBaseUrl": "https://api.openai.com/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "gpt-4o",
+    "gemini-2.5-flash": "gpt-4o-mini",
+    "gemini-2.0-pro": "gpt-4",
+    "gemini-1.5-pro": "gpt-4-turbo",
+    "gemini-1.5-flash": "gpt-3.5-turbo"
+  },
+  "theme": "default-dark",
+  "showMemoryUsage": true,
+  "telemetry": {
+    "enabled": false
+  },
+  "usageStatisticsEnabled": false,
+  "fileFiltering": {
+    "respectGitIgnore": true,
+    "respectGeminiIgnore": true,
+    "enableRecursiveFileSearch": true
+  }
+}

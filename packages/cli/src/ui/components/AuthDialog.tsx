@@ -52,10 +52,11 @@ export function AuthDialog({
     }
 
     if (
-      process.env.OPENAI_API_KEY &&
+      (process.env.OPENAI_API_KEY || settings.merged.openaiApiKey) &&
       (!defaultAuthType || defaultAuthType === AuthType.USE_OPENAI)
     ) {
-      return 'Existing API key detected (OPENAI_API_KEY). Select "OpenAI API Key" option to use it.';
+      const source = settings.merged.openaiApiKey ? 'settings.json' : 'OPENAI_API_KEY environment variable';
+      return `Existing API key detected (${source}). Select "OpenAI API Key" option to use it.`;
     }
     if (
       process.env.GEMINI_API_KEY &&
@@ -113,7 +114,7 @@ export function AuthDialog({
   });
 
   const handleAuthSelect = (authMethod: AuthType) => {
-    const error = validateAuthMethod(authMethod);
+    const error = validateAuthMethod(authMethod, settings.merged);
     if (error) {
       setErrorMessage(error);
     } else {

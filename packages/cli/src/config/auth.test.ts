@@ -67,6 +67,30 @@ describe('validateAuthMethod', () => {
     });
   });
 
+  describe('USE_OPENAI', () => {
+    it('should return null if OPENAI_API_KEY is set in environment', () => {
+      process.env.OPENAI_API_KEY = 'test-key';
+      expect(validateAuthMethod(AuthType.USE_OPENAI)).toBeNull();
+    });
+
+    it('should return null if openaiApiKey is set in settings', () => {
+      const settings = { openaiApiKey: 'test-key' };
+      expect(validateAuthMethod(AuthType.USE_OPENAI, settings)).toBeNull();
+    });
+
+    it('should return an error message if neither settings nor env have API key', () => {
+      expect(validateAuthMethod(AuthType.USE_OPENAI)).toBe(
+        'OpenAI API key not found. Configure it in settings.json (openaiApiKey) or set the OPENAI_API_KEY environment variable.',
+      );
+    });
+
+    it('should prefer settings over environment variables', () => {
+      process.env.OPENAI_API_KEY = 'env-key';
+      const settings = { openaiApiKey: 'settings-key' };
+      expect(validateAuthMethod(AuthType.USE_OPENAI, settings)).toBeNull();
+    });
+  });
+
   it('should return an error message for an invalid auth method', () => {
     expect(validateAuthMethod('invalid-method')).toBe(
       'Invalid auth method selected.',

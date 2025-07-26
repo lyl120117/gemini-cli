@@ -69,6 +69,9 @@ describe('createContentGeneratorConfig', () => {
     setModel: vi.fn(),
     flashFallbackHandler: vi.fn(),
     getProxy: vi.fn(),
+    getOpenAIApiKey: vi.fn(),
+    getOpenAIBaseUrl: vi.fn(),
+    getOpenAIModelMapping: vi.fn().mockReturnValue({}),
   } as unknown as Config;
 
   beforeEach(() => {
@@ -135,5 +138,64 @@ describe('createContentGeneratorConfig', () => {
     );
     expect(config.apiKey).toBeUndefined();
     expect(config.vertexai).toBeUndefined();
+  });
+
+  it('should configure for OpenAI using settings first', async () => {
+    // Mock settings values
+    mockConfig.getOpenAIApiKey = vi.fn().mockReturnValue('settings-api-key');
+    mockConfig.getOpenAIBaseUrl = vi.fn().mockReturnValue('https://settings.api.com/v1');
+    mockConfig.getOpenAIModelMapping = vi.fn().mockReturnValue({
+      'gemini-pro': 'custom-model',
+    });
+    
+    // Also set environment variables to test priority
+    process.env.OPENAI_API_KEY = 'env-api-key';
+    process.env.OPENAI_BASE_URL = 'https://env.api.com/v1';
+
+    const config = await createContentGeneratorConfig(
+      mockConfig,
+      AuthType.USE_OPENAI,
+    );
+    
+    expect(config.apiKey).toBe('settings-api-key');
+    expect((config as any).openaiBaseUrl).toBe('https://settings.api.com/v1');
+    expect((config as any).openaiModelMapping).toEqual({
+      'gemini-pro': 'custom-model',
+    });
+    expect(config.vertexai).toBe(false);
+  });
+
+  it('should configure for OpenAI using environment variables as fallback', async () => {
+    // Mock no settings values
+    mockConfig.getOpenAIApiKey = vi.fn().mockReturnValue(undefined);
+    mockConfig.getOpenAIBaseUrl = vi.fn().mockReturnValue(undefined);
+    
+    // Set environment variables
+    process.env.OPENAI_API_KEY = 'env-api-key';
+    process.env.OPENAI_BASE_URL = 'https://env.api.com/v1';
+
+    const config = await createContentGeneratorConfig(
+      mockConfig,
+      AuthType.USE_OPENAI,
+    );
+    
+    expect(config.apiKey).toBe('env-api-key');
+    expect((config as any).openaiBaseUrl).toBe('https://env.api.com/v1');
+    expect(config.vertexai).toBe(false);
+  });
+
+  it('should handle partial OpenAI configuration from settings and env', async () => {
+    // API key from settings, base URL from environment
+    mockConfig.getOpenAIApiKey = vi.fn().mockReturnValue('settings-api-key');
+    mockConfig.getOpenAIBaseUrl = vi.fn().mockReturnValue(undefined);
+    process.env.OPENAI_BASE_URL = 'https://env.api.com/v1';
+
+    const config = await createContentGeneratorConfig(
+      mockConfig,
+      AuthType.USE_OPENAI,
+    );
+    
+    expect(config.apiKey).toBe('settings-api-key');
+    expect((config as any).openaiBaseUrl).toBe('https://env.api.com/v1');
   });
 });

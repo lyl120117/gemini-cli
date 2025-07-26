@@ -8,27 +8,9 @@ The OpenAI adapter translates between Gemini's API format and OpenAI's API forma
 
 ## Configuration Methods
 
-### 1. Environment Variables (Recommended)
+### 1. Settings Configuration (Recommended)
 
-The adapter automatically reads configuration from environment variables. You can set these in your shell profile or create a `.env` file in your project root or home directory:
-
-```bash
-# Required - API key for authentication
-OPENAI_API_KEY=your-api-key-here
-
-# Optional - Base URL for the API endpoint
-# Defaults to: https://api.openai.com/v1
-OPENAI_BASE_URL=https://api.openai.com/v1
-
-# Note: The model is selected using the standard Gemini model names
-# and mapped to OpenAI-compatible models via openaiModelMapping
-```
-
-The adapter will automatically use these environment variables if they are set, even if not explicitly provided in the configuration.
-
-### 2. Settings Configuration
-
-Configure authentication and model mappings in `settings.json`:
+Configure authentication, API credentials, and model mappings in `settings.json`:
 
 **User settings:** `~/.gemini/settings.json`  
 **Project settings:** `.gemini/settings.json`
@@ -36,15 +18,34 @@ Configure authentication and model mappings in `settings.json`:
 ```json
 {
   "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "your-api-key-here",
+  "openaiBaseUrl": "https://api.openai.com/v1",
   "openaiModelMapping": {
     "gemini-2.5-pro": "gpt-4o",
-    "gemini-2.5-flash": "gpt-4o-mini",
-    "gemini-2.0-pro": "gpt-4",
-    "gemini-1.5-pro": "gpt-4-turbo",
-    "gemini-1.5-flash": "gpt-3.5-turbo"
+    "gemini-2.5-flash": "gpt-4o-mini"
   }
 }
 ```
+
+### 2. Environment Variables (Fallback)
+
+If not configured in settings.json, the adapter will fall back to environment variables. You can set these in your shell profile or create a `.env` file in your project root or home directory:
+
+```bash
+# API key for authentication
+OPENAI_API_KEY=your-api-key-here
+
+# Base URL for the API endpoint (optional)
+# Defaults to: https://api.openai.com/v1
+OPENAI_BASE_URL=https://api.openai.com/v1
+```
+
+### 3. Priority Order
+
+The adapter uses the following priority order for configuration:
+1. Settings from `settings.json` (highest priority)
+2. Environment variables
+3. Default values (for base URL only)
 
 ## Model Mapping
 
@@ -70,6 +71,8 @@ The `openaiModelMapping` configuration allows custom mapping of Gemini model nam
 ```json
 {
   "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-moonshot-key",
+  "openaiBaseUrl": "https://api.moonshot.cn/v1",
   "openaiModelMapping": {
     "gemini-2.5-pro": "kimi-k2-0711-preview",
     "gemini-2.5-flash": "kimi-k1-0701"
@@ -81,6 +84,8 @@ The `openaiModelMapping` configuration allows custom mapping of Gemini model nam
 ```json
 {
   "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-deepseek-key",
+  "openaiBaseUrl": "https://api.deepseek.com/v1",
   "openaiModelMapping": {
     "gemini-2.5-pro": "deepseek-chat",
     "gemini-2.5-flash": "deepseek-coder"
@@ -118,28 +123,48 @@ gemini -p "Your prompt here"
 ## Alternative Providers
 
 ### Moonshot AI (Kimi)
-```bash
-OPENAI_API_KEY=sk-your-moonshot-key
-OPENAI_BASE_URL=https://api.moonshot.cn/v1
-OPENAI_MODEL=kimi-k2-0711-preview
+**Settings.json:**
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-moonshot-key",
+  "openaiBaseUrl": "https://api.moonshot.cn/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "kimi-k2-0711-preview",
+    "gemini-2.5-flash": "kimi-k1-0701"
+  }
+}
 ```
 - Supports very long context (up to 1M tokens)
 - Models: `kimi-k2-0711-preview`, `kimi-k1-0701`
 
 ### DeepSeek
-```bash
-OPENAI_API_KEY=sk-your-deepseek-key
-OPENAI_BASE_URL=https://api.deepseek.com/v1
-OPENAI_MODEL=deepseek-chat
+**Settings.json:**
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "sk-your-deepseek-key",
+  "openaiBaseUrl": "https://api.deepseek.com/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-pro": "deepseek-chat",
+    "gemini-2.5-flash": "deepseek-coder"
+  }
+}
 ```
 - Optimized for code generation
 - Models: `deepseek-chat`, `deepseek-coder`
 
 ### Local LLMs
-```bash
-OPENAI_BASE_URL=http://localhost:8080/v1
-OPENAI_API_KEY=not-needed
-OPENAI_MODEL=local-model-name
+**Settings.json:**
+```json
+{
+  "selectedAuthType": "openai-api-key",
+  "openaiApiKey": "not-needed",
+  "openaiBaseUrl": "http://localhost:8080/v1",
+  "openaiModelMapping": {
+    "gemini-2.5-flash": "local-model-name"
+  }
+}
 ```
 
 ## Limitations

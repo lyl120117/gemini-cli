@@ -5,9 +5,9 @@
  */
 
 import { AuthType } from '@google/gemini-cli-core';
-import { loadEnvironment } from './settings.js';
+import { loadEnvironment, Settings } from './settings.js';
 
-export const validateAuthMethod = (authMethod: string): string | null => {
+export const validateAuthMethod = (authMethod: string, settings?: Settings): string | null => {
   loadEnvironment();
   if (
     authMethod === AuthType.LOGIN_WITH_GOOGLE ||
@@ -39,8 +39,12 @@ export const validateAuthMethod = (authMethod: string): string | null => {
   }
 
   if (authMethod === AuthType.USE_OPENAI) {
-    if (!process.env.OPENAI_API_KEY) {
-      return 'OPENAI_API_KEY environment variable not found. Add that to your environment and try again (no reload needed if using .env)!';
+    // Check settings first, then environment variables
+    const hasApiKeyInSettings = settings?.openaiApiKey;
+    const hasApiKeyInEnv = process.env.OPENAI_API_KEY;
+    
+    if (!hasApiKeyInSettings && !hasApiKeyInEnv) {
+      return 'OpenAI API key not found. Configure it in settings.json (openaiApiKey) or set the OPENAI_API_KEY environment variable.';
     }
     return null;
   }
