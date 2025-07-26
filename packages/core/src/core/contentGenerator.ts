@@ -18,6 +18,7 @@ import { DEFAULT_GEMINI_MODEL } from '../config/models.js';
 import { Config } from '../config/config.js';
 import { getEffectiveModel } from './modelCheck.js';
 import { UserTierId } from '../code_assist/types.js';
+import { createOpenAIAdapter } from '../adapters/openai-adapter/index.js';
 
 /**
  * Interface abstracting the core functionalities for generating content and counting tokens.
@@ -43,6 +44,7 @@ export enum AuthType {
   USE_GEMINI = 'gemini-api-key',
   USE_VERTEX_AI = 'vertex-ai',
   CLOUD_SHELL = 'cloud-shell',
+  USE_OPENAI = 'openai-api-key',
 }
 
 export type ContentGeneratorConfig = {
@@ -61,6 +63,9 @@ export function createContentGeneratorConfig(
   const googleApiKey = process.env.GOOGLE_API_KEY || undefined;
   const googleCloudProject = process.env.GOOGLE_CLOUD_PROJECT || undefined;
   const googleCloudLocation = process.env.GOOGLE_CLOUD_LOCATION || undefined;
+  const openaiApiKey = process.env.OPENAI_API_KEY || undefined;
+  const openaiBaseUrl = process.env.OPENAI_BASE_URL || undefined;
+  const openaiModel = process.env.OPENAI_MODEL || 'gpt-4-turbo-preview';
 
   // Use runtime model from config if available; otherwise, fall back to parameter or default
   const effectiveModel = config.getModel() || DEFAULT_GEMINI_MODEL;
@@ -97,6 +102,17 @@ export function createContentGeneratorConfig(
   ) {
     contentGeneratorConfig.apiKey = googleApiKey;
     contentGeneratorConfig.vertexai = true;
+
+    return contentGeneratorConfig;
+  }
+
+  if (authType === AuthType.USE_OPENAI && openaiApiKey) {
+    contentGeneratorConfig.apiKey = openaiApiKey;
+    contentGeneratorConfig.model = openaiModel;
+    contentGeneratorConfig.vertexai = false;
+    // Store OpenAI specific config
+    (contentGeneratorConfig as any).openaiBaseUrl = openaiBaseUrl;
+    (contentGeneratorConfig as any).openaiModelMapping = config.getOpenAIModelMapping();
 
     return contentGeneratorConfig;
   }
@@ -138,6 +154,19 @@ export async function createContentGenerator(
     });
 
     return googleGenAI.models;
+  }
+
+  if (config.authType === AuthType.USE_OPENAI) {
+    if (!config.apiKey) {
+      throw new Error('OpenAI API key is required');
+    }
+    
+    return createOpenAIAdapter({
+      apiKey: config.apiKey,
+      baseURL: (config as any).openaiBaseUrl,
+      model: config.model,
+      modelMapping: (config as any).openaiModelMapping,
+    });
   }
 
   throw new Error(

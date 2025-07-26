@@ -183,6 +183,7 @@ export interface ConfigParameters {
   summarizeToolOutput?: Record<string, SummarizeToolOutputSettings>;
   ideMode?: boolean;
   ideClient?: IdeClient;
+  openaiModelMapping?: Record<string, string>;
 }
 
 export class Config {
@@ -226,6 +227,7 @@ export class Config {
   private readonly noBrowser: boolean;
   private readonly ideMode: boolean;
   private readonly ideClient: IdeClient | undefined;
+  private readonly openaiModelMapping: Record<string, string> | undefined;
   private modelSwitchedDuringSession: boolean = false;
   private readonly maxSessionTurns: number;
   private readonly listExtensions: boolean;
@@ -292,6 +294,7 @@ export class Config {
     this.summarizeToolOutput = params.summarizeToolOutput;
     this.ideMode = params.ideMode ?? false;
     this.ideClient = params.ideClient;
+    this.openaiModelMapping = params.openaiModelMapping;
 
     if (params.contextFileName) {
       setGeminiMdFilename(params.contextFileName);
@@ -587,6 +590,10 @@ export class Config {
 
   getIdeClient(): IdeClient | undefined {
     return this.ideClient;
+  }
+
+  getOpenAIModelMapping(): Record<string, string> | undefined {
+    return this.openaiModelMapping;
   }
 
   async getGitService(): Promise<GitService> {

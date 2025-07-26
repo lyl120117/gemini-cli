@@ -102,6 +102,9 @@ export interface Settings {
   // Add other settings here.
   ideMode?: boolean;
   memoryDiscoveryMaxDirs?: number;
+
+  // Model mapping configuration for OpenAI adapter
+  openaiModelMapping?: Record<string, string>;
 }
 
 export interface SettingsError {
